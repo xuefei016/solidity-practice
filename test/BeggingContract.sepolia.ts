@@ -30,7 +30,7 @@ describe("BeggingContract on Sepolia", function () {
         expect(after).to.equal(before + 1n);
     });
 
-    it("read address donote amount", async function () {
+    it.only("read address donote amount", async function () {
         const deployedAddress = process.env.BEGGING_CONTRACT_ADDRESS;
         if (!deployedAddress) {
             throw new Error("Missing BEGGING_CONTRACT_ADDRESS in .env");
@@ -69,4 +69,31 @@ describe("BeggingContract on Sepolia", function () {
 
         expect(after).to.equal(0n);
     });
+
+    it("should record direct ETH transfer as a donation", async function () {
+        const deployedAddress = process.env.BEGGING_CONTRACT_ADDRESS;
+        if (!deployedAddress) {
+            throw new Error("Missing BEGGING_CONTRACT_ADDRESS in .env");
+        }
+
+        const { ethers } = await network.create({
+            network: "sepolia",
+            chainType: "l1",
+        });
+
+        const [, contributor] = await ethers.getSigners();
+        const contract = await ethers.getContractAt("BeggingContract", deployedAddress);
+
+        const before = await contract.getDonation(contributor.address);
+        const tx = await contributor.sendTransaction({
+            to: deployedAddress,
+            value: 1n,
+        });
+        await tx.wait();
+        const after = await contract.getDonation(contributor.address);
+
+        expect(after).to.equal(before + 1n);
+    });
+
+
 });

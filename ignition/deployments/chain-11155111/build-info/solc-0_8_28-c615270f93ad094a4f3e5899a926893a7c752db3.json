@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-c615270f93ad094a4f3e5899a926893a7c752db3",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.9.1"
+  },
+  "userSourceNameMap": {
+    "contracts/BeggingContract.sol": "project/contracts/BeggingContract.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/BeggingContract.sol": {
+        "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8.28;\n\ncontract BeggingContract {\n    mapping(address => uint256) public contributions;\n\n    address public owner;\n\n    constructor() {\n        owner = msg.sender;\n    }\n\n    modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner can call this function\");\n        _;\n    }\n\n    function donate() public payable {\n        _recordDonation();\n    }\n\n    receive() external payable {\n        _recordDonation();\n    }\n\n    fallback() external payable {\n        _recordDonation();\n    }\n\n    function withdraw() public onlyOwner {\n        uint256 contractBalance = address(this).balance;\n        require(contractBalance > 0, \"No funds to withdraw\");\n        (bool success, ) = payable(owner).call{value: contractBalance}(\"\");\n        require(success, \"Transfer failed\");\n    }\n\n    function getDonation(address contributor) public view returns (uint256) {\n        require(contributor != address(0), \"Invalid contributor address\");\n        return contributions[contributor];\n    }\n\n    function _recordDonation() internal {\n        require(msg.value > 0, \"Sent value must > 0\");\n        contributions[msg.sender] += msg.value;\n    }\n}\n"
+      }
+    }
+  }
+}
