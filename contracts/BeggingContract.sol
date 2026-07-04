@@ -16,18 +16,31 @@ contract BeggingContract {
     }
 
     function donate() public payable {
-        require(msg.value > 0, "Sent value must > 0");
-        contributions[msg.sender] += msg.value;
+        _recordDonation();
+    }
+
+    receive() external payable {
+        _recordDonation();
+    }
+
+    fallback() external payable {
+        _recordDonation();
     }
 
     function withdraw() public onlyOwner {
         uint256 contractBalance = address(this).balance;
         require(contractBalance > 0, "No funds to withdraw");
-        payable(owner).transfer(contractBalance);
+        (bool success, ) = payable(owner).call{value: contractBalance}("");
+        require(success, "Transfer failed");
     }
 
     function getDonation(address contributor) public view returns (uint256) {
         require(contributor != address(0), "Invalid contributor address");
         return contributions[contributor];
+    }
+
+    function _recordDonation() internal {
+        require(msg.value > 0, "Sent value must > 0");
+        contributions[msg.sender] += msg.value;
     }
 }
