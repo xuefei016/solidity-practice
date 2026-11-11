@@ -1,4 +1,4 @@
-# solidity_homework
+# solidity-practice
 
 A Hardhat 3 practice project of Solidity contracts covering ETH donations, on-chain voting, and a few classic algorithm exercises (string reversal, Roman numeral conversion, binary search, and merging sorted arrays).
 
@@ -102,8 +102,8 @@ Used by `hardhat.config.ts` and the Sepolia tests. Set them in a local `.env` (g
 ## Getting started
 
 ```shell
-git clone https://github.com/xuefei016/solidity_homework.git
-cd solidity_homework
+git clone https://github.com/xuefei016/solidity-practice.git
+cd solidity-practice
 npm install
 npx hardhat compile
 npx hardhat test
